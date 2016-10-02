@@ -1,0 +1,30 @@
+Parte escrita
+  -usar modelo sbc
+  -Definição compiladores
+  -Definição + descrição analise Léxica
+  -Definição + descrição analise sintática
+  -Definição + descrição analise semântica
+  -Gramática criada na forma normal de backus
+  -Exemplo de um programa válido
+  -Exemplo de um programa inválido (explipar os erros)
+  
+Implementação
+  -Instalar plugin javaCC
+  -Definir a liguagem
+  -Definir Regras de produção
+  -Analise lexica + sintatica
+  -Controle básico de erros
+  -Mensagems erro em portugues
+  -Entrada por arquivo ou console
+  -Uma Estrutura de laço de repetição
+  -Uma Estrutura condicional
+  -Definição de váriaveis unicas e em lista
+  -Se tipada: três tipos de dados
+  
+ Apresentação
+  -Conceitos básicos (compilador, analise léxica, sintatica, semantica)
+  -Descrever a linguagem criada
+  -Mostrar implementação (exemplos)
+  
+  
+  
