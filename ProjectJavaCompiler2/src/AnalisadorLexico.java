@@ -72,14 +72,10 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
                 System.exit(0);
         }
 
- /*   while ((aux = token_source.getNextToken()).kind != 0) { // 0 = EOF
-    	gui.setMsg(cospeToken(aux)); 
-        
-    }*/
   }
 
         public static String cospeToken( Token recebido) {
-                // recebe o token e verifica o tipo (vide eg1Constants)
+                // recebe o token e verifica o tipo
 
                 System.out.println("proximo: "+ TipoToken.nomeToken[recebido.kind]);
 
@@ -94,10 +90,8 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
     while (true) {
       bloco();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case INTEGER:
-      case FLOAT:
-      case STRING:
-      case DELIMITADOR_ESQ:
+      case LEFT_BOUND:
+      case NEW_VAR_DE:
         ;
         break;
       default:
@@ -114,20 +108,18 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
     label_2:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-      case INTEGER:
-      case FLOAT:
-      case STRING:
+      case NEW_VAR_DE:
         ;
         break;
       default:
         jj_la1[1] = jj_gen;
         break label_2;
       }
-      declara_variaveis();
+      declaraVar();
     }
-    jj_consume_token(DELIMITADOR_ESQ);
+    jj_consume_token(LEFT_BOUND);
     comando();
-    jj_consume_token(DELIMITADOR_DIR);
+    jj_consume_token(RIGHT_BOUND);
   }
 
   static final public void comando() throws ParseException {
@@ -139,7 +131,7 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
       jj_la1[5] = jj_gen;
       if (jj_2_1(2)) {
         jj_consume_token(IF);
-        expressao_logica();
+        expressaoLogica();
         jj_consume_token(THEN);
         comando();
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -152,10 +144,10 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
           ;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-        case DELIMITADOR_ESQ:
-          jj_consume_token(DELIMITADOR_ESQ);
+        case LEFT_BOUND:
+          jj_consume_token(LEFT_BOUND);
           comando();
-          jj_consume_token(DELIMITADOR_DIR);
+          jj_consume_token(RIGHT_BOUND);
           break;
         default:
           jj_la1[3] = jj_gen;
@@ -167,13 +159,13 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
           jj_consume_token(FOR);
           atribuicao();
           jj_consume_token(TO);
-          extremidade_expressao();
+          extremidadeExp();
           comando();
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-          case DELIMITADOR_ESQ:
-            jj_consume_token(DELIMITADOR_ESQ);
+          case LEFT_BOUND:
+            jj_consume_token(LEFT_BOUND);
             comando();
-            jj_consume_token(DELIMITADOR_DIR);
+            jj_consume_token(RIGHT_BOUND);
             break;
           default:
             jj_la1[4] = jj_gen;
@@ -208,13 +200,14 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
     jj_consume_token(PONTO_VIRG);
   }
 
-  static final public void declara_variaveis() throws ParseException {
+  static final public void declaraVar() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case INTEGER:
+    case NEW_VAR_DE:
+      jj_consume_token(NEW_VAR_DE);
       jj_consume_token(INTEGER);
       label_3:
       while (true) {
-        identificador_variaveis();
+        variavel();
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case ID:
         case VIRGULA:
@@ -227,11 +220,11 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
       }
       jj_consume_token(PONTO_VIRG);
       break;
-    case FLOAT:
+      jj_consume_token(NEW_VAR_DE);
       jj_consume_token(FLOAT);
       label_4:
       while (true) {
-        identificador_variaveis();
+        variavel();
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case ID:
         case VIRGULA:
@@ -244,11 +237,11 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
       }
       jj_consume_token(PONTO_VIRG);
       break;
-    case STRING:
+      jj_consume_token(NEW_VAR_DE);
       jj_consume_token(STRING);
       label_5:
       while (true) {
-        identificador_variaveis();
+        variavel();
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case ID:
         case VIRGULA:
@@ -268,7 +261,7 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
     }
   }
 
-  static final public void identificador_variaveis() throws ParseException {
+  static final public void variavel() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case VIRGULA:
       jj_consume_token(VIRGULA);
@@ -284,12 +277,12 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
     }
   }
 
-  static final public void expressao_matematica() throws ParseException {
-    extremidade_expressao();
+  static final public void expressaoMatematica() throws ParseException {
+    extremidadeExp();
     label_6:
     while (true) {
-      operador_matematico();
-      extremidade_expressao();
+      operadorMatematico();
+      extremidadeExp();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case SUM:
       case SUBTRACTION:
@@ -304,12 +297,12 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
     }
   }
 
-  static final public void expressao_logica() throws ParseException {
-    extremidade_expressao();
+  static final public void expressaoLogica() throws ParseException {
+    extremidadeExp();
     label_7:
     while (true) {
-      operador_logico();
-      extremidade_expressao();
+      operadorLogico();
+      extremidadeExp();
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case BIGGER:
       case MINOR:
@@ -326,7 +319,7 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
     }
   }
 
-  static final public void extremidade_expressao() throws ParseException {
+  static final public void extremidadeExp() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ID:
       jj_consume_token(ID);
@@ -341,7 +334,7 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
     }
   }
 
-  static final public void operador_matematico() throws ParseException {
+  static final public void operadorMatematico() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case SUM:
       jj_consume_token(SUM);
@@ -362,7 +355,7 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
     }
   }
 
-  static final public void operador_logico() throws ParseException {
+  static final public void operadorLogico() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case BIGGER:
       jj_consume_token(BIGGER);
@@ -401,19 +394,19 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
     return false;
   }
 
-  static private boolean jj_3_1() {
-    if (jj_scan_token(IF)) return true;
-    if (jj_3R_8()) return true;
-    return false;
-  }
-
   static private boolean jj_3R_9() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(29)) {
+    if (jj_scan_token(30)) {
     jj_scanpos = xsp;
     if (jj_scan_token(14)) return true;
     }
+    return false;
+  }
+
+  static private boolean jj_3_1() {
+    if (jj_scan_token(IF)) return true;
+    if (jj_3R_8()) return true;
     return false;
   }
 
@@ -437,10 +430,10 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
       jj_la1_init_1();
    }
    private static void jj_la1_init_0() {
-      jj_la1_0 = new int[] {0x101c0,0x1c0,0x800,0x10000,0x10000,0x20000000,0x1000,0x40004000,0x20000000,0x20000000,0x20000000,0x1c0,0x20000000,0x3c0000,0x1f800000,0x20004000,0x3c0000,0x1f800000,};
+      jj_la1_0 = new int[] {0x50000,0x40000,0x800,0x10000,0x10000,0x40000000,0x1000,0x80004000,0x40000000,0x40000000,0x40000000,0x40000,0x40000000,0x780000,0x3f000000,0x40004000,0x780000,0x3f000000,};
    }
    private static void jj_la1_init_1() {
-      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1,0x1,0x1,0x0,0x1,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2,0x2,0x2,0x0,0x2,0x0,0x0,0x0,0x0,0x0,};
    }
   static final private JJCalls[] jj_2_rtns = new JJCalls[1];
   static private boolean jj_rescan = false;
@@ -647,7 +640,7 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
   /** Generate ParseException. */
   static public ParseException generateParseException() {
     jj_expentries.clear();
-    boolean[] la1tokens = new boolean[33];
+    boolean[] la1tokens = new boolean[34];
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
@@ -664,7 +657,7 @@ public class AnalisadorLexico implements AnalisadorLexicoConstants {
         }
       }
     }
-    for (int i = 0; i < 33; i++) {
+    for (int i = 0; i < 34; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;

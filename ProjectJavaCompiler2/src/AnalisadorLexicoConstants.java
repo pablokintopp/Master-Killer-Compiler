@@ -31,39 +31,41 @@ public interface AnalisadorLexicoConstants {
   /** RegularExpression Id. */
   int DIGIT = 15;
   /** RegularExpression Id. */
-  int DELIMITADOR_ESQ = 16;
+  int LEFT_BOUND = 16;
   /** RegularExpression Id. */
-  int DELIMITADOR_DIR = 17;
+  int RIGHT_BOUND = 17;
   /** RegularExpression Id. */
-  int SUM = 18;
+  int NEW_VAR_DE = 18;
   /** RegularExpression Id. */
-  int SUBTRACTION = 19;
+  int SUM = 19;
   /** RegularExpression Id. */
-  int MULTIPLICATION = 20;
+  int SUBTRACTION = 20;
   /** RegularExpression Id. */
-  int DIVISION = 21;
+  int MULTIPLICATION = 21;
   /** RegularExpression Id. */
-  int ATRIBUICAO = 22;
+  int DIVISION = 22;
   /** RegularExpression Id. */
-  int BIGGER = 23;
+  int ATRIBUICAO = 23;
   /** RegularExpression Id. */
-  int MINOR = 24;
+  int BIGGER = 24;
   /** RegularExpression Id. */
-  int MINOR_EQUAL = 25;
+  int MINOR = 25;
   /** RegularExpression Id. */
-  int BIGGER_EQUAL = 26;
+  int MINOR_EQUAL = 26;
   /** RegularExpression Id. */
-  int DIFERENTE = 27;
+  int BIGGER_EQUAL = 27;
   /** RegularExpression Id. */
-  int EQUAL = 28;
+  int DIFERENTE = 28;
   /** RegularExpression Id. */
-  int ID = 29;
+  int EQUAL = 29;
   /** RegularExpression Id. */
-  int DELIMITAR_STRING = 30;
+  int ID = 30;
   /** RegularExpression Id. */
-  int PONTO_VIRG = 31;
+  int DELIMITAR_STRING = 31;
   /** RegularExpression Id. */
-  int VIRGULA = 32;
+  int PONTO_VIRG = 32;
+  /** RegularExpression Id. */
+  int VIRGULA = 33;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -75,24 +77,25 @@ public interface AnalisadorLexicoConstants {
     "\"\\r\"",
     "\"\\t\"",
     "\"\\n\"",
-    "\"ini\"",
-    "\"int\"",
-    "\"flu\"",
-    "\"str\"",
-    "\"se\"",
-    "\"entao\"",
-    "\"senao\"",
+    "\"commence\"",
+    "\"numnatural\"",
+    "\"numreal\"",
+    "\"varditexto\"",
+    "\"umavezque\"",
+    "\"assimsendo\"",
+    "\"porem\"",
     "\"de\"",
-    "\"ate\"",
+    "\"laceie\"",
     "<NUMBER>",
     "<DIGIT>",
-    "\">>\"",
-    "\"<<\"",
+    "\"->\"",
+    "\"<-\"",
+    "\"newvartype\"",
     "\"+\"",
     "\"-\"",
     "\"*\"",
     "\"/\"",
-    "\"<-\"",
+    "\"::\"",
     "\">\"",
     "\"<\"",
     "\"<=\"",

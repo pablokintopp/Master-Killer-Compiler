@@ -120,7 +120,7 @@ TOKEN : /* PALAVRAS RESERVADAS */
 |	< DIGIT: ["0" -"9"]>
 |   < LEFT_BOUND: "->" >
 |	< RIGHT_BOUND: "<-" >
-	< NEW_VAR_DE: "newvartype" >
+| 	< NEW_VAR_DE: "newvartype" >
 }
 
 
@@ -130,7 +130,7 @@ TOKEN : /*OPERADORES*/
 |	< SUBTRACTION: "-" >
 |	< MULTIPLICATION: "*" >
 |	< DIVISION: "/" >	
-|	< ATRIBUICAO: "<-">
+|	< ATRIBUICAO: "::">
 |	< BIGGER: ">" >
 |	< MINOR: "<" >
 |	< MINOR_EQUAL: "<=" >
@@ -143,9 +143,9 @@ TOKEN : /*OPERADORES*/
 TOKEN :
 {
 	< ID: ["a" - "z" , "A" - "Z"](["a" - "z" , "A" - "Z" , "0" - "9", "_"])*>
-|	< DELIMITAR_STRING: "delimitertext" >
-|   < PONTO_VIRG: "endcommandline" >
-|   < VIRGULA: "comma" >
+|	< DELIMITAR_STRING: "'" > 
+|   < PONTO_VIRG: ";" > 
+|   < VIRGULA: "," >
 }
 
 
@@ -167,27 +167,25 @@ void bloco() : {}
 */
  
 {
-	(declara_variaveis())* <LEFT_BOUND> comando() <RIGHT_BOUND>
+	(declaraVar())* <LEFT_BOUND> comando() <RIGHT_BOUND>
 	//|<LEFT_BOUND> comando() <RIGHT_BOUND>
 
 }
 
 void comando() : {} 
 {
-/* Definio do que acontece na parte comando da linguagem
-	<comando> ::= <varivel> <- <expresso> ; <comando>
-                | IF <expresso> THEN <comando> ELSE <comando>
-                | FOR <identificador> <- <expresso> TO <expresso> <comando>
+/*
+	<comando> ::= <varivel> <- <expressao> ; <comando>
+                | IF <expressao> THEN <comando> ELSE <comando>
+                | FOR <identificador> <- <expressao> TO <expresso> <comando>
                 | >> <comando> <<
-	
-  Acabei adicionando tambm a possibilidade de o comando ser apenas uma simples atribuio
-  o LOOKAHEAD(2) no if  para que ele verifique os tokens a frente para escolher quando seguir o else 
-  ou no, j que o else, no  necessrio, mas pode ocorrer.
+
+      O lookahead verifica se existe o else antes de ir pro if.
 */	
 
 	 atribuicao() 
-	| LOOKAHEAD(2)<IF> expressao_logica() <THEN> comando() (<ELSE> comando())?   (<LEFT_BOUND> comando()<RIGHT_BOUND> )?
-	| <FOR> atribuicao() <TO> extremidade_expressao() comando() (<LEFT_BOUND> comando()<RIGHT_BOUND> )?
+	| LOOKAHEAD(2)<IF> expressaoLogica() <THEN> comando() (<ELSE> comando())?   (<LEFT_BOUND> comando()<RIGHT_BOUND> )?
+	| <FOR> atribuicao() <TO> extremidadeExp() comando() (<LEFT_BOUND> comando()<RIGHT_BOUND> )?
 	
 	| {System.out.println("Fim comando");}
 	//| <LEFT_BOUND> comando() <RIGHT_BOUND>
@@ -198,12 +196,10 @@ void comando() : {}
 
 void atribuicao() : {}
 {
-/* Diz que um ID (em tese no me de varivel) pode receber ou NUMBER ou letra
-*/
 	<ID> <ATRIBUICAO> (<NUMBER> | <DELIMITAR_STRING><ID><DELIMITAR_STRING>) <PONTO_VIRG>
 	 	
 } 
-void declara_variaveis() : {} 
+void declaraVar() : {} 
 
 /* Definio do que acontece na parte de declarao de variaveis
    <declaraes> ::=  <tipo>  <lista_identificadores> ;
@@ -212,60 +208,44 @@ void declara_variaveis() : {}
 */
 
 {
-	  <NEW_VAR_DE > <INTEGER> 	(identificador_variaveis())+  <PONTO_VIRG>
-	| <NEW_VAR_DE > <FLOAT> 	(identificador_variaveis())+  <PONTO_VIRG>
-	| <NEW_VAR_DE > <STRING>	    (identificador_variaveis())+  <PONTO_VIRG>
+	  <NEW_VAR_DE > <INTEGER> 	(variavel())+  <PONTO_VIRG>
+	| <NEW_VAR_DE > <FLOAT> 	(variavel())+  <PONTO_VIRG>
+	| <NEW_VAR_DE > <STRING>	    (variavel())+  <PONTO_VIRG>
 
 }
 
-void identificador_variaveis() : { } 
+void variavel() : { } 
 
-/* vide declara variveis
-*/
 
 {
 	<VIRGULA> <ID>
 	| <ID>
 }
 
-void expressao_matematica() : {}
-/* Esta funo bem como a funo por ela chamada (extremidade_expressao() )
-   tem por finalidade traduzir para cdigo o seguinte trecho da gramtica
-   <expresso> ::= <varivel>
+void expressaoMatematica() : {}
+/* 
+   <expressao> ::= <varivel>
                   | <identificador>
-                  | <expresso> <operador> <expresso>
-   Como a mesma possui recurso a esquerda, e o JavaCC no permite isto
-   foi-se necessria a criao da sub-rotina supra-citada.
-   A funo void operador_matematico() apenas defini os operadores (matemticos) que podem ser usados.
-   
-   ------>>>>> Obs: Apenas operaes matemticas
+                  | <expressao> <operador> <expressao>   
 */
 {
-		extremidade_expressao() (operador_matematico() extremidade_expressao())+ 
+		extremidadeExp() (operadorMatematico() extremidadeExp())+ 
 }
 
-void expressao_logica() : {}
-/* Esta funo bem como a funo por ela chamada (extremidade_expressao() )
-   tem por finalidade traduzir para cdigo o seguinte trecho da gramtica
-   <expresso> ::= <varivel>
-                  | <identificador>
-                  | <expresso> <operador> <expresso>
-   Como a mesma possui recurso a esquerda, e o JavaCC no permite isto
-   foi-se necessria a criao da sub-rotina supra-citada.
-   A funo void operador_logico() apenas defini os operadores (lgicos) que podem ser usados.
-   
-   ------>>>>> Obs: Apenas operaes lgicas para tomada de decises em comandos
+void expressaoLogica() : {}
+/*
+EXPRESSAO LOGICA
 */
 {
-		extremidade_expressao() (operador_logico() extremidade_expressao())+
+		extremidadeExp() (operadorLogico() extremidadeExp())+
 
 }
 
 
  
-void extremidade_expressao() : {} 
+void extremidadeExp() : {} 
 /*
-   Extremidade da expresso (id ou nmero), vide comentrio em void expressao().
+  LIMITADOR DA EXTREMIDADE DAS EXPRESSOES
 */
 {
 	      <ID>
@@ -273,9 +253,9 @@ void extremidade_expressao() : {}
 	
 }
 
-void operador_matematico() : {} 
+void operadorMatematico() : {} 
 /*
- A funo void operador() apenas defini os operadores matemticos que podem ser usados.
+ OPERADORES MATEMATICOS + - * /
 */
 {
 		< SUM >
@@ -285,9 +265,9 @@ void operador_matematico() : {}
 	
 }
 
-void operador_logico() : {} 
+void operadorLogico() : {} 
 /*
- A funo void operador_logico() apenas defini os operadores lgicos que podem ser usados.
+ OPERADORES LOGICOS
 */
 {
 		< BIGGER >
