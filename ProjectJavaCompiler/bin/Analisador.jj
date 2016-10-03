@@ -84,14 +84,10 @@ public class AnalisadorLexico {
 		System.exit(0);
 	}
 		
- /*   while ((aux = token_source.getNextToken()).kind != 0) { // 0 = EOF
-    	gui.setMsg(cospeToken(aux)); 
-        
-    }*/
   }
 
   	public static String cospeToken( Token recebido) {
-  		// recebe o token e verifica o tipo (vide eg1Constants)
+  		// recebe o token e verifica o tipo
 
 		System.out.println("proximo: "+ TipoToken.nomeToken[recebido.kind]);	
 		
@@ -119,11 +115,11 @@ TOKEN : /* PALAVRAS RESERVADAS */
 |	< THEN : "entao">
 |	< ELSE: "senao">
 |	< FOR: "de">
-|	< TO: "ate">
+|	< TO: "laceie">
 |	< NUMBER: (<DIGIT>)+ ( "." (<DIGIT>)+ )?>
 |	< DIGIT: ["0" -"9"]>
-|   < DELIMITADOR_ESQ: ">>" >
-|	< DELIMITADOR_DIR: "<<" >
+|   < LEFT_BOUND: ">>" >
+|	< RIGHT_BOUND: "<<" >
 }
 
 
@@ -170,8 +166,8 @@ void bloco() : {}
 */
  
 {
-	(declara_variaveis())* <DELIMITADOR_ESQ> comando() <DELIMITADOR_DIR>
-	//|<DELIMITADOR_ESQ> comando() <DELIMITADOR_DIR>
+	(declara_variaveis())* <LEFT_BOUND> comando() <RIGHT_BOUND>
+	//|<LEFT_BOUND> comando() <RIGHT_BOUND>
 
 }
 
@@ -189,11 +185,11 @@ void comando() : {}
 */	
 
 	 atribuicao() 
-	| LOOKAHEAD(2)<IF> expressao_logica() <THEN> comando() (<ELSE> comando())?   (<DELIMITADOR_ESQ> comando()<DELIMITADOR_DIR> )?
-	| <FOR> atribuicao() <TO> extremidade_expressao() comando() (<DELIMITADOR_ESQ> comando()<DELIMITADOR_DIR> )?
+	| LOOKAHEAD(2)<IF> expressao_logica() <THEN> comando() (<ELSE> comando())?   (<LEFT_BOUND> comando()<RIGHT_BOUND> )?
+	| <FOR> atribuicao() <TO> extremidade_expressao() comando() (<LEFT_BOUND> comando()<RIGHT_BOUND> )?
 	
 	| {System.out.println("Fim comando");}
-	//| <DELIMITADOR_ESQ> comando() <DELIMITADOR_DIR>
+	//| <LEFT_BOUND> comando() <RIGHT_BOUND>
 	
 
 }
