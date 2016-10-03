@@ -1,0 +1,301 @@
+
+
+/**
+ * JavaCC file
+ */
+ 
+options {
+  JDK_VERSION = "1.8";
+}
+PARSER_BEGIN(AnalisadorLexico)
+
+
+
+public class AnalisadorLexico {
+		private static String myFile = "";
+	// função para abertura de arquivo a ser usado como source para leitura de tokens
+	public static java.io.BufferedReader abreArquivo (String file){
+		java.io.BufferedReader in;
+		java.io.File arquivinho = new java.io.File(file);
+    	try {
+         	in= new java.io.BufferedReader(new java.io.FileReader(arquivinho));
+    	} catch(java.io.IOException e) {
+    		in = null;
+    		System.out.println("Arquivo não pode ser aberto.");
+    	}		
+		return (in);	
+	}
+  public static void main(String args[]) throws ParseException {
+
+	//Verifica tipo qual será o tipo de entrada
+	Object[] options = {"Usar arquivo", "Usar console"};
+		  int tipoEntrada = javax.swing.JOptionPane.showOptionDialog(null,
+				    "Qual será o tipo de entrada dos dados?",
+				    "Entrada",
+				    javax.swing.JOptionPane.YES_NO_OPTION,
+				    javax.swing.JOptionPane.QUESTION_MESSAGE,
+				    null,
+				    options,options[0]);
+	
+	// Receba o arquivo aberto, leia uma linha 
+	 try {
+
+	   if(tipoEntrada == javax.swing.JOptionPane.YES_OPTION) { 
+	 	//Verifica se ja nao ha arquivo escolhido
+		 	if (myFile.equals("")){
+		 		//Cria o Seletor de arquivos e seta o disco "C:" como default
+		 		javax.swing.JFileChooser arquivo = new javax.swing.JFileChooser();
+		 		
+		 		//Habilita para escolha  
+	            arquivo.showOpenDialog(null);
+	            //Recebe o Path do arquivo
+	            myFile = arquivo.getSelectedFile().getAbsolutePath();
+		 	    //Abre o arquivo no endereco escolhido
+	         	java.io.BufferedReader aux = abreArquivo(myFile);
+	            String str;  
+	            java.io.StringReader sr = new java.io.StringReader( aux.readLine());
+		        java.io.Reader r = new java.io.BufferedReader( sr );		
+	   	        AnalisadorLexico parser = new AnalisadorLexico( abreArquivo(myFile));
+		        java.io.BufferedReader in = aux;
+	    	
+	            // enquanto houverem linhas, as leio;
+	            while ((str = in.readLine()) != null) {
+	            	sr = new java.io.StringReader( str);
+		        	r = new java.io.BufferedReader( sr );
+	            }
+	            //Encerra o buffer  
+	            in.close();
+		 	}
+		}else {
+				AnalisadorLexico parser = new AnalisadorLexico( System.in);
+		  } 
+    } catch (java.io.IOException e) {
+    	 javax.swing.JOptionPane.showMessageDialog(null,"Erro ao iniciar o Analisador Lexico!");
+    } 
+    
+//	Token aux;
+//	tokenGUI gui = new tokenGUI();
+	try {
+	 main();
+	 System.out.println("Entrada aceita");
+    }
+	catch (ParseException es) {
+		System.out.println(es);
+		System.exit(0);
+	}
+		
+  }
+
+  	public static String cospeToken( Token recebido) {
+  		// recebe o token e verifica o tipo
+
+		System.out.println("proximo: "+ TipoToken.nomeToken[recebido.kind]);	
+		
+		return ("proximo: "+ TipoToken.nomeToken[recebido.kind]);
+	}
+} 
+
+
+PARSER_END(AnalisadorLexico)
+
+SKIP :
+{
+ 	" "
+|	"\r"
+|	"\t"
+|	"\n"
+}
+TOKEN : /* PALAVRAS RESERVADAS */
+{
+	< BEGIN : "commence">
+|	< INTEGER: "numnatural">
+|	< FLOAT: "numreal">
+|	< STRING: "varditexto">
+|	< IF : "umavezque">
+|	< THEN : "assimsendo">
+|	< ELSE: "porem">
+|	< FOR: "de">
+|	< TO: "laceie">
+|	< NUMBER: (<DIGIT>)+ ( "." (<DIGIT>)+ )?>
+|	< DIGIT: ["0" -"9"]>
+|   < LEFT_BOUND: "->" >
+|	< RIGHT_BOUND: "<-" >
+	< NEW_VAR_DE: "newvartype" >
+}
+
+
+TOKEN : /*OPERADORES*/
+{
+	< SUM: "+" >
+|	< SUBTRACTION: "-" >
+|	< MULTIPLICATION: "*" >
+|	< DIVISION: "/" >	
+|	< ATRIBUICAO: "<-">
+|	< BIGGER: ">" >
+|	< MINOR: "<" >
+|	< MINOR_EQUAL: "<=" >
+|	< BIGGER_EQUAL: ">=" >
+|	< DIFERENTE: "<>" >
+|	< EQUAL: "=" >
+	
+}
+
+TOKEN :
+{
+	< ID: ["a" - "z" , "A" - "Z"](["a" - "z" , "A" - "Z" , "0" - "9", "_"])*>
+|	< DELIMITAR_STRING: "delimitertext" >
+|   < PONTO_VIRG: "endcommandline" >
+|   < VIRGULA: "comma" >
+}
+
+
+int main() : {}
+
+{
+	  
+  <BEGIN> <ID> <PONTO_VIRG> 
+  (bloco())+
+
+  <EOF>
+{return 0;}
+} 
+
+void bloco() : {} 
+
+/* Definio do que acontece na parte bloco seguindo
+   <bloco> ::= <declaraes> >> <comando> << | >> <comando> <<
+*/
+ 
+{
+	(declara_variaveis())* <LEFT_BOUND> comando() <RIGHT_BOUND>
+	//|<LEFT_BOUND> comando() <RIGHT_BOUND>
+
+}
+
+void comando() : {} 
+{
+/* Definio do que acontece na parte comando da linguagem
+	<comando> ::= <varivel> <- <expresso> ; <comando>
+                | IF <expresso> THEN <comando> ELSE <comando>
+                | FOR <identificador> <- <expresso> TO <expresso> <comando>
+                | >> <comando> <<
+	
+  Acabei adicionando tambm a possibilidade de o comando ser apenas uma simples atribuio
+  o LOOKAHEAD(2) no if  para que ele verifique os tokens a frente para escolher quando seguir o else 
+  ou no, j que o else, no  necessrio, mas pode ocorrer.
+*/	
+
+	 atribuicao() 
+	| LOOKAHEAD(2)<IF> expressao_logica() <THEN> comando() (<ELSE> comando())?   (<LEFT_BOUND> comando()<RIGHT_BOUND> )?
+	| <FOR> atribuicao() <TO> extremidade_expressao() comando() (<LEFT_BOUND> comando()<RIGHT_BOUND> )?
+	
+	| {System.out.println("Fim comando");}
+	//| <LEFT_BOUND> comando() <RIGHT_BOUND>
+	
+
+}
+
+
+void atribuicao() : {}
+{
+/* Diz que um ID (em tese no me de varivel) pode receber ou NUMBER ou letra
+*/
+	<ID> <ATRIBUICAO> (<NUMBER> | <DELIMITAR_STRING><ID><DELIMITAR_STRING>) <PONTO_VIRG>
+	 	
+} 
+void declara_variaveis() : {} 
+
+/* Definio do que acontece na parte de declarao de variaveis
+   <declaraes> ::=  <tipo>  <lista_identificadores> ;
+   <lista_identificadores> ::= <identificador> ;| <identificador>, <lista_identificadores> ;
+
+*/
+
+{
+	  <NEW_VAR_DE > <INTEGER> 	(identificador_variaveis())+  <PONTO_VIRG>
+	| <NEW_VAR_DE > <FLOAT> 	(identificador_variaveis())+  <PONTO_VIRG>
+	| <NEW_VAR_DE > <STRING>	    (identificador_variaveis())+  <PONTO_VIRG>
+
+}
+
+void identificador_variaveis() : { } 
+
+/* vide declara variveis
+*/
+
+{
+	<VIRGULA> <ID>
+	| <ID>
+}
+
+void expressao_matematica() : {}
+/* Esta funo bem como a funo por ela chamada (extremidade_expressao() )
+   tem por finalidade traduzir para cdigo o seguinte trecho da gramtica
+   <expresso> ::= <varivel>
+                  | <identificador>
+                  | <expresso> <operador> <expresso>
+   Como a mesma possui recurso a esquerda, e o JavaCC no permite isto
+   foi-se necessria a criao da sub-rotina supra-citada.
+   A funo void operador_matematico() apenas defini os operadores (matemticos) que podem ser usados.
+   
+   ------>>>>> Obs: Apenas operaes matemticas
+*/
+{
+		extremidade_expressao() (operador_matematico() extremidade_expressao())+ 
+}
+
+void expressao_logica() : {}
+/* Esta funo bem como a funo por ela chamada (extremidade_expressao() )
+   tem por finalidade traduzir para cdigo o seguinte trecho da gramtica
+   <expresso> ::= <varivel>
+                  | <identificador>
+                  | <expresso> <operador> <expresso>
+   Como a mesma possui recurso a esquerda, e o JavaCC no permite isto
+   foi-se necessria a criao da sub-rotina supra-citada.
+   A funo void operador_logico() apenas defini os operadores (lgicos) que podem ser usados.
+   
+   ------>>>>> Obs: Apenas operaes lgicas para tomada de decises em comandos
+*/
+{
+		extremidade_expressao() (operador_logico() extremidade_expressao())+
+
+}
+
+
+ 
+void extremidade_expressao() : {} 
+/*
+   Extremidade da expresso (id ou nmero), vide comentrio em void expressao().
+*/
+{
+	      <ID>
+	| <NUMBER>
+	
+}
+
+void operador_matematico() : {} 
+/*
+ A funo void operador() apenas defini os operadores matemticos que podem ser usados.
+*/
+{
+		< SUM >
+	|	< SUBTRACTION >
+	|	< MULTIPLICATION >
+	|	< DIVISION >	
+	
+}
+
+void operador_logico() : {} 
+/*
+ A funo void operador_logico() apenas defini os operadores lgicos que podem ser usados.
+*/
+{
+		< BIGGER >
+	|	< MINOR >
+	|	< MINOR_EQUAL >
+	|	< BIGGER_EQUAL >
+	|	< DIFERENTE >
+	|	< EQUAL >
+}
+
+
