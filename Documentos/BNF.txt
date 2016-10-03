@@ -1,0 +1,62 @@
+
+<S> ::= <BEGIN> <ID> <PONTO_VIRG> (<bloco>)+ <EOF>
+
+<bloco> ::= (<declararVar>)* <LEFT_BOUND> <commando> <RIGHT_BOUND>
+
+<commando> ::= <atribuicao> 
+			| <IF> <expressaoLogica> <THEN> <commando> (<ELSE> <comando>)? (<LEFT_BOUND> <comando><RIGHT_BOUND> )?
+			| <FOR> <atribuicao> <TO> <extremidadeExp> <comando> (<LEFT_BOUND> <comando><RIGHT_BOUND> )?
+			
+<atribuicao> ::= <ID> <ATRIBUICAO> (<NUMBER> | <DELIMITAR_STRING><ID><DELIMITAR_STRING>) <PONTO_VIRG>
+
+<declaraVar> ::=   <NEW_VAR_DE > <INTEGER> 	(<variavel>)+  <PONTO_VIRG>
+			| <NEW_VAR_DE > <FLOAT> (<variavel>)+  <PONTO_VIRG>
+			| <NEW_VAR_DE > <STRING> (<variavel>)+  <PONTO_VIRG>
+
+<variavel> ::= <VIRGULA> <ID> | <ID>
+
+<expressaoMatematica> ::= <extremidadeExp> (<operadorMatematico> <extremidadeExp>)+ 
+
+<expressaoLogica> ::= <extremidadeExp> (<operadorLogico> <extremidadeExp>)+ 
+
+<extremidadeExp> ::= <ID> | <NUMBER>
+
+<operadorMatematico> ::= <SUM> | <SUBTRACTION> | <MULTIPLICATION> | <DIVISION>
+
+<operadorLogico> ::= <BIGGER>|<MINOR>|<MINOR_EQUAL>|<BIGGER_EQUAL>|<DIFERENTE>|<EQUAL>
+
+<BEGIN> ::= commence
+<INTEGER> ::= numnatural
+<FLOAT> ::= numreal
+<STRING> ::= varditexto
+<IF> ::= umavezque
+<THEN> ::= assimsendo
+<ELSE> ::= porem
+<FOR> ::= de
+<TO> ::= laceie
+<NUMBER> ::= (<DIGIT>)+ (.(<DIGIT>)+)?
+<DIGIT> ::= 0|1|2|3|4|5|6|7|8|9
+<LEFT_BOUND> ::= ->
+<RIGHT_BOUND> ::= <-
+<NEW_VAR_DE> ::= newvartype
+<SUM> ::= +
+<SUBTRACTION> ::= -
+<MULTIPLICATION> ::= *
+<DIVISION> ::= /
+<ATRIBUICAO> ::= ::
+<BIGGER> ::= >
+<MINOR> ::= <
+<MINOR_EQUAL> ::= <=
+<BIGGER_EQUAL> ::= >= 
+<DIFERENTE> ::= <>
+<EQUAL> ::= =
+<ID> ::= <LETRA>(<LETRA><DIGIT>)*
+<LETRA>::= a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z|A|B|C|D|E|
+F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z| _
+<DELIMITAR_STRING> ::= '
+<PONTO_VIRG> ::= ;
+<VIRGULA> ::= ,
+
+
+
+
