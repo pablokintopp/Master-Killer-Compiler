@@ -1,0 +1,5 @@
+commence myProg ;
+newvartype numnatural soma;
+-> soma :: 50 ; <-
+-> umavezque soma > 10 assimsendo soma :: 50 ; <- 
+-> de i :: 1; laceie i umavezque soma > 1000 assimsendo soma :: 10 ; <-

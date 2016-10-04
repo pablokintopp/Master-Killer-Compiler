@@ -3,6 +3,7 @@
 \usepackage{sbc-template}
 
 \usepackage{graphicx,url}
+\usepackage{listings}
 
 %\usepackage[brazil]{babel}   
 \usepackage[latin1]{inputenc}  
@@ -33,19 +34,89 @@
 
 
 \section{Compiladores}
- Compilador é um programa de computador que transforma ou traduz uma linguagem de programação em alto nível para uma linguagem em mais baixo nível. 
+ Compilador é um programa de computador que transforma ou traduz uma linguagem de programação em alto nível para uma linguagem em mais baixo nível. Isto é, ele converte uma linguagem de programação tal como C/C++, Java e Python em linguagem de máquina. Entretanto como aponta~\cite{jorge}, o compilador proporciona vantagens além de sua principal função. Essas vantagens são: abstração do uso de linguagens de baixo nível, checagem de erros e vulnerabilidades, geração de código portável e otimização de código. O trabalho do compilador é subdividido em duas etapas: a primeira é chamada de \textit{frontEnd} ou análise e a segunda é chamada síntese ou \textit{backEnd}. Na etapa de análise ocorrem as análises léxica, sintática e semântica. Sendo que durante essas análises, diversos tipos de erros podem ser identificados e, as vezes, reparados. Nessa etapa também ocorre a criação de uma representação intermediaria do programa. Na etapa de síntese, as representações intermediarias criadas na etapa anterior são utilizadas para construir o programa de destino. 
 
 \section{Análise Léxica} \label{sec:firstpage}
-
+ O analisador léxico é uma função que transforma sequências de caracteres em sequências de símbolos, palavras ou \textit{tokens}~\cite{jorge}. Essa análise é a primeira etapa no processamento de programas. Ela faz a leitura sequencial dos caracteres que formam o programa fonte. Ao ler os caracteres é feita uma separação dos mesmo em \textit{tokens}. E para cada um dessas palavras é feito um reconhecimento, isto é, o analisador verifica se os \textit{tokens} gerados são válidos. Ainda durante essa análise, é usada a tabela de símbolos para guardar informações a respeito dos \textit{tokens} criados. A tabela de símbolo é uma estrutura no formato \textit{hash} usada para mapear um ID de um \textit{token} com suas informações.
 
 \section{Análise Sintática}
+A análise sintática é a etapa que a partir dos \textit{tokens} gerados pela análise léxica irá construir uma representação da estrutura que gramatical do programa. Essa estrutura é chamada árvore sintática e ela é fundamental na verificação das regras sintáticas da linguagem. Para fazer isso, os símbolos terminais são agrupados e verificados se formam uma frase sintaticamente válida. Em outras palavras, ao derivar os símbolos não terminais a estrutura no formato de árvore é construída. Se as folhas dessa arvore gerada forem compostas de símbolos terminais válidos, a sentença de entrada é aceita. 
+
+\section{Análise Semântica}
+A análise semântica é a ultima etapa de análise antes do compilador gerar o programa intermediário. Essa fase procura possíveis erros semânticos e guarda informações contextuais adicionais. Isso é feito por meio da verificação de regras semânticas na linguagem e por cálculos de valores associados aos símbolos. Dessa maneira é possível obter-se o significado completo da frase.  
 
 
-\section{Análise Semática}
+\section{Aplicação desenvolvida}
+Com base nas instruções recebidas em sala de aula, e nos requisitos do trabalho, foi desenvolvido um compilador contendo as etapas de análise léxica e sintática com um controle básico de erros. Para esse trabalho foi utilizada a linguagem Java, junto com a JavaCC, que é uma ferramenta de auxilio para criação de compiladores. A seguir é mostrada a gramática criada, utilizando para isso o formalismo de Backus-Naur:
+\begin{lstlisting}
+
+<S> ::= <BEGIN> <ID> <PONTO_VIRG> (<bloco>)+ <EOF>
+
+<bloco> ::= (<declararVar>)* <LEFT_BOUND> <commando> <RIGHT_BOUND>
+
+<commando> ::= <atribuicao> 
+| <IF> <expressaoLogica> <THEN> <commando> (<ELSE> <comando>)?
+ (<LEFT_BOUND> <comando><RIGHT_BOUND> )?
+| <FOR> <atribuicao> <TO> <extremidadeExp> <comando> 
+(<LEFT_BOUND> <comando><RIGHT_BOUND> )?
+
+<atribuicao> ::= <ID> <ATRIBUICAO> 
+(<NUMBER> | <DELIMITAR_STRING><ID><DELIMITAR_STRING>) <PONTO_VIRG>
+
+<declaraVar> ::=   <NEW_VAR_DE > <INTEGER> 	(<variavel>)+  <PONTO_VIRG>
+| <NEW_VAR_DE > <FLOAT> (<variavel>)+  <PONTO_VIRG>
+| <NEW_VAR_DE > <STRING> (<variavel>)+  <PONTO_VIRG>
+
+<variavel> ::= <VIRGULA> <ID> | <ID>
+
+<expressaoMatematica> ::= <extremidadeExp> 
+(<operadorMatematico> <extremidadeExp>)+ 
+
+<expressaoLogica> ::= <extremidadeExp> 
+(<operadorLogico> <extremidadeExp>)+ 
+
+<extremidadeExp> ::= <ID> | <NUMBER>
+
+<operadorMatematico> ::= <SUM> | <SUBTRACTION> 
+| <MULTIPLICATION> | <DIVISION>
+
+<operadorLogico> ::= <BIGGER>|<MINOR>|<MINOR_EQUAL>
+|<BIGGER_EQUAL>|<DIFERENTE>|<EQUAL>
+
+<BEGIN> ::= commence
+<INTEGER> ::= numnatural
+<FLOAT> ::= numreal
+<STRING> ::= varditexto
+<IF> ::= umavezque
+<THEN> ::= assimsendo
+<ELSE> ::= porem
+<FOR> ::= de
+<TO> ::= laceie
+<NUMBER> ::= (<DIGIT>)+ (.(<DIGIT>)+)?
+<DIGIT> ::= 0|1|2|3|4|5|6|7|8|9
+<LEFT_BOUND> ::= ->
+<RIGHT_BOUND> ::= <-
+<NEW_VAR_DE> ::= newvartype
+<SUM> ::= +
+<SUBTRACTION> ::= -
+<MULTIPLICATION> ::= *
+<DIVISION> ::= /
+<ATRIBUICAO> ::= ::
+<BIGGER> ::= >
+<MINOR> ::= <
+<MINOR_EQUAL> ::= <=
+<BIGGER_EQUAL> ::= >= 
+<DIFERENTE> ::= <>
+<EQUAL> ::= =
+<ID> ::= <LETRA>(<LETRA><DIGIT>)*
+<LETRA>::= a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z|A|B|C
+|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z| _
+<DELIMITAR_STRING> ::= '
+<PONTO_VIRG> ::= ;
+<VIRGULA> ::= ,
 
 
-\section{Gramática Criada}
-
+\end{lstlisting}
 
 
 
