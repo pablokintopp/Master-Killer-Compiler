@@ -1,0 +1,61 @@
+<S>    ::= <PROGRAM_BEGIN><BODY><PROGRAM_END>
+<BODY> ::= (<DECLARATION> | <ATRIBUTION><SEMICOLON> | <IF_BLOCK> | <FOR_BLOCK>)+
+		
+<DECLARATION> ::= <TYPE><ID>(<COMMA><ID>)*<SEMICOLON>
+			
+<ATRIBUTION> ::= <ID><ASSIGN> (<MATH_EXPRESSION>| <NUMBER> | <STRING_DELIMITER><ID><STRING_DELIMITER> | <ID>)
+
+<DECLARATION_ATRIBUTION> ::= <TYPE><ID><ASSIGN> (<MATH_EXPRESSION>| <NUMBER> | <STRING_DELIMITER><ID><STRING_DELIMITER> | <ID>) <SEMICOLON> 
+
+<IF_BLOCK> ::= <IF><LOGIC_EXPRESSION><THEN><BODY>(<ELSE><BODY>)? <END_IF>
+
+<FOR_BLOCK> ::= <FOR>((<TYPE><ATRIBUTION>) | <NUMBER>) <TO> <LOGIC_EXPRESSION> <DOING> <MATH_EXPRESSION> <MOREOVER> <BODY> <END_FOR>
+
+<MATH_EXPRESSION> ::=  (<ID>|<NUMBER>) (<MATH_OPERATOR> (<ID>|<NUMBER>))+
+
+<LOGIC_EXPRESSION> ::= 	<LOGIC_EXPRESSION_SIMPLE>  ((<AND> | <OR>) <LOGIC_EXPRESSION_SIMPLE>)*
+
+<LOGIC_EXPRESSION_SIMPLE> ::= (<ID>|<NUMBER>) <LOGIC_OPERATOR> (<ID>|<NUMBER>)
+
+<MATH_OPERATOR> ::= <SUM>|<SUBTRACTION>|<MULTIPLICATION>|<DIVISION>
+
+<LOGIC_OPERATOR> ::= <BIGGER>|<MINOR>|<MINOR_EQUAL>|<BIGGER_EQUAL>|<DIFERENTE>|<EQUAL>
+
+<TYPE> ::= <INTEGER> | <FLOAT> | <STRING>
+
+<NUMBER> ::= (<DIGIT>)+ (.(<DIGIT>)+)?
+<ID> ::= <LETTER>(<LETTER><DIGIT>)*
+<LETTER>::= { "_", "a"-"z", "A"-"Z"}
+<DIGIT> ::= {"0"-"9"}
+<SEMICOLON> ::= ;
+<ASSIGN> ::= ::
+<PROGRAM_BEGIN> ::= pogeando
+<PROGRAM_END>  ::= despogeando
+<INTEGER> ::= numnatural
+<FLOAT> ::= numreal
+<STRING> ::= varditexto
+<COMMA> ::= ,
+<STRING_DELIMITER> ::= ' 
+<IF> ::= umavezque
+<THEN> ::= assimsendo
+<ELSE> ::= porem
+<END_IF> ::= umavezfeito
+<FOR> ::= de
+<TO> ::= ate
+<DOING> ::= fazendo
+<MOREOVER> ::= laceie
+<END_FOR> ::= laceou
+<AND> ::= ee
+<OR> ::=  ou
+<SUM> ::= +
+<SUBTRACTION> ::= -
+<MULTIPLICATION> ::= *
+<DIVISION> ::= /
+<BIGGER> ::= >
+<MINOR> ::= <
+<MINOR_EQUAL> ::= <=
+<BIGGER_EQUAL> ::= >= 
+<DIFERENTE> ::= <>
+<EQUAL> ::= =
+
+

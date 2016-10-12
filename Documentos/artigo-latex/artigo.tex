@@ -4,8 +4,9 @@
 
 \usepackage{graphicx,url}
 \usepackage{listings}
+\usepackage{amsmath,amsfonts,amssymb} % pacote matematico
 
-%\usepackage[brazil]{babel}   
+\usepackage[brazil]{babel}   
 \usepackage[latin1]{inputenc}  
 
      
@@ -48,76 +49,170 @@ A análise semântica é a ultima etapa de análise antes do compilador gerar o prog
 
 \section{Aplicação desenvolvida}
 Com base nas instruções recebidas em sala de aula, e nos requisitos do trabalho, foi desenvolvido um compilador contendo as etapas de análise léxica e sintática com um controle básico de erros. Para esse trabalho foi utilizada a linguagem Java, junto com a JavaCC, que é uma ferramenta de auxilio para criação de compiladores. A seguir é mostrada a gramática criada, utilizando para isso o formalismo de Backus-Naur:
-\begin{lstlisting}
 
-<S> ::= <BEGIN> <ID> <PONTO_VIRG> (<bloco>)+ <EOF>
+\begingroup
+\fontsize{10pt}{12pt}\selectfont
+	\begin{lstlisting}
 
-<bloco> ::= (<declararVar>)* <LEFT_BOUND> <commando> <RIGHT_BOUND>
 
-<commando> ::= <atribuicao> 
-| <IF> <expressaoLogica> <THEN> <commando> (<ELSE> <comando>)?
- (<LEFT_BOUND> <comando><RIGHT_BOUND> )?
-| <FOR> <atribuicao> <TO> <extremidadeExp> <comando> 
-(<LEFT_BOUND> <comando><RIGHT_BOUND> )?
 
-<atribuicao> ::= <ID> <ATRIBUICAO> 
-(<NUMBER> | <DELIMITAR_STRING><ID><DELIMITAR_STRING>) <PONTO_VIRG>
+<S> ::= <PROGRAM_BEGIN><BODY><PROGRAM_END>
 
-<declaraVar> ::=   <NEW_VAR_DE > <INTEGER> 	(<variavel>)+  <PONTO_VIRG>
-| <NEW_VAR_DE > <FLOAT> (<variavel>)+  <PONTO_VIRG>
-| <NEW_VAR_DE > <STRING> (<variavel>)+  <PONTO_VIRG>
+<BODY> ::= (<DECLARATION> | <ATRIBUTION><SEMICOLON>
+		 | <IF_BLOCK> | <FOR_BLOCK>)+
 
-<variavel> ::= <VIRGULA> <ID> | <ID>
+<DECLARATION> ::= <TYPE><ID>(<COMMA><ID>)*<SEMICOLON>
 
-<expressaoMatematica> ::= <extremidadeExp> 
-(<operadorMatematico> <extremidadeExp>)+ 
+<ATRIBUTION> ::= <ID><ASSIGN> (<MATH_EXPRESSION>| <NUMBER> 
+					|<STRING_DELIMITER><ID><STRING_DELIMITER> 
+					| <ID>)
 
-<expressaoLogica> ::= <extremidadeExp> 
-(<operadorLogico> <extremidadeExp>)+ 
+<DECLARATION_ATRIBUTION> ::= <TYPE><ID><ASSIGN> (<MATH_EXPRESSION>
+	| <NUMBER> | <STRING_DELIMITER><ID><STRING_DELIMITER> 
+	| <ID>) <SEMICOLON> 
 
-<extremidadeExp> ::= <ID> | <NUMBER>
+<IF_BLOCK> ::= <IF><LOGIC_EXPRESSION><THEN><BODY>(<ELSE><BODY>)? <END_IF>
 
-<operadorMatematico> ::= <SUM> | <SUBTRACTION> 
-| <MULTIPLICATION> | <DIVISION>
+<FOR_BLOCK> ::= <FOR>((<TYPE><ATRIBUTION>) 
+       | <NUMBER>) <TO> <LOGIC_EXPRESSION> <DOING>
+          <MATH_EXPRESSION> <MOREOVER> <BODY> <END_FOR>
 
-<operadorLogico> ::= <BIGGER>|<MINOR>|<MINOR_EQUAL>
-|<BIGGER_EQUAL>|<DIFERENTE>|<EQUAL>
+<MATH_EXPRESSION> ::=  (<ID>|<NUMBER>) (<MATH_OPERATOR> (<ID>|<NUMBER>))+
 
-<BEGIN> ::= commence
+<LOGIC_EXPRESSION> ::= 	<LOGIC_EXPRESSION_SIMPLE>  
+					((<AND> | <OR>) <LOGIC_EXPRESSION_SIMPLE>)*
+
+<LOGIC_EXPRESSION_SIMPLE> ::= (<ID>|<NUMBER>) 
+				<LOGIC_OPERATOR> (<ID>|<NUMBER>)
+
+<MATH_OPERATOR> ::= <SUM>|<SUBTRACTION>
+					|<MULTIPLICATION>|<DIVISION>
+
+<LOGIC_OPERATOR> ::= <BIGGER>|<MINOR>|<MINOR_EQUAL>
+					|<BIGGER_EQUAL>|<DIFERENTE>|<EQUAL>
+
+<TYPE> ::= <INTEGER> | <FLOAT> | <STRING>
+
+<NUMBER> ::= (<DIGIT>)+ (.(<DIGIT>)+)?
+<ID> ::= <LETTER>(<LETTER><DIGIT>)*
+<LETTER>::= { "_", "a"-"z", "A"-"Z"}
+<DIGIT> ::= {"0"-"9"}
+<SEMICOLON> ::= ;
+<ASSIGN> ::= ::
+<PROGRAM_BEGIN> ::= pogeando
+<PROGRAM_END>  ::= pogeou
 <INTEGER> ::= numnatural
 <FLOAT> ::= numreal
 <STRING> ::= varditexto
+<COMMA> ::= ,
+<STRING_DELIMITER> ::= ' 
 <IF> ::= umavezque
 <THEN> ::= assimsendo
 <ELSE> ::= porem
+<END_IF> ::= umavezfeito
 <FOR> ::= de
-<TO> ::= laceie
-<NUMBER> ::= (<DIGIT>)+ (.(<DIGIT>)+)?
-<DIGIT> ::= 0|1|2|3|4|5|6|7|8|9
-<LEFT_BOUND> ::= ->
-<RIGHT_BOUND> ::= <-
-<NEW_VAR_DE> ::= newvartype
+<TO> ::= ate
+<DOING> ::= fazendo
+<MOREOVER> ::= laceie
+<END_FOR> ::= laceou
+<AND> ::= ee
+<OR> ::=  ou
 <SUM> ::= +
 <SUBTRACTION> ::= -
 <MULTIPLICATION> ::= *
 <DIVISION> ::= /
-<ATRIBUICAO> ::= ::
 <BIGGER> ::= >
 <MINOR> ::= <
 <MINOR_EQUAL> ::= <=
 <BIGGER_EQUAL> ::= >= 
 <DIFERENTE> ::= <>
 <EQUAL> ::= =
-<ID> ::= <LETRA>(<LETRA><DIGIT>)*
-<LETRA>::= a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z|A|B|C
-|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z| _
-<DELIMITAR_STRING> ::= '
-<PONTO_VIRG> ::= ;
-<VIRGULA> ::= ,
-
 
 \end{lstlisting}
 
+\endgroup
+
+Como mostrado pelo formalismo de Backus-Naur, essa linguagem possui muitas construções com recursividade a direita. Esse tipo de recursividade pode ser vistas nas regras que geram os blocos fundamentais da linguagem, como o bloco condicional e o bloco de repetição. Em outras palavras, da maneira como a gramática foi criada a linguagem poderá ser escrita de maneira a aninhar estruturas, dando ao programador maior liberdade na hora de programar. Abaixo é mostrado um exemplo de uma linguagem válida gerada por essa gramática.
+
+\begin{lstlisting}
+pogeando
+	numnatural a :: 5 ;
+	numreal b;
+	numreal num :: b * 2 + 5.68;
+	varditexto c, d, e;
+	varditexto teste;
+	d :: c;
+	a :: 10 + D;
+	b :: 25*2 + 89/2;
+
+	numnatural f;
+	f :: a;
+
+	umavezque f <= 10 assimsendo 
+		f :: 50;
+	umavezfeito
+	
+	umavezque a > f ee f > 0 ou a > 0 assimsendo 
+		numreal g :: 10.55;
+		numreal h ;
+		numreal i;
+		h :: 5.555;
+		g :: h;
+		i :: g;	
+	porem
+		numnatural g ;
+		numnatural h;
+		numnatural i;	
+		h :: 5;
+		g :: h + 8;
+		i :: g;			
+	umavezfeito
+		
+	numnatural j; 
+	
+	de j :: i ate j >= 100 fazendo j + 1 laceie
+		g :: i;
+		umavezque a > f assimsendo 
+			numreal k;
+			numreal l ;
+			numreal m;
+			k :: 5.555;
+			l :: h;
+			m :: g;	
+		porem
+			de l ate m > 500 fazendo m * l + 5 laceie
+				numnatural x;
+				x :: 5568;
+				x :: x - 500;
+			laceou	
+		umavezfeito
+	laceou
+pogeou
+\end{lstlisting} 
+
+Entretanto uma linguagem inválida poderia ser dada simplesmente pela falta dos terminais obrigatórios \textit{pogeando} e \textit{pogeou} como mostrado abaixo:
+
+\begin{lstlisting} 
+	numnatural g ;
+	numnatural h;
+	numnatural i;	
+	h :: 5;
+	g :: h + 8;
+	i :: g;	
+\end{lstlisting} 
+
+Ou ainda, pela tentativa de uso de regras não definidas como pode ser visto no exemplo abaixo.
+\begin{lstlisting} 
+numnatural g, numnatural h ;
+
+umavezque numnatural a = 0 > f assimsendo 
+
+de j :: i ate j >= 100 fazendo numnatural k = j + 1 laceie
+
+
+
+\end{lstlisting} 
+ 
 
 
 
